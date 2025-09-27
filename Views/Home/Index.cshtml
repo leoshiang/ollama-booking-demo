@@ -1,0 +1,53 @@
+﻿@model BookingIntent
+@{
+    ViewData["Title"] = "會議室預約助理";
+}
+
+<div class="text-center">
+    <h1 class="display-4">會議室預約 AI 助理</h1>
+    <p>請用自然語言輸入您的預約指令</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <form asp-action="ProcessQuery" method="post">
+            <div class="form-group">
+                <textarea name="query" class="form-control" rows="3" placeholder="例如：幫我預約明天的 Alpha 會議室，從下午兩點開始用一個小時">@ViewBag.Query</textarea>
+            </div>
+            <br />
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">傳送給 AI</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <hr />
+    <div class="row mt-4">
+        <div class="col-md-8 offset-md-2">
+            <h3>AI 解析結果:</h3>
+            @if (Model.Intent != "unknown" && Model.Entities != null)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <strong>意圖:</strong> @Model.Intent
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>會議室:</strong> @(Model.Entities.RoomName ?? "未指定")</li>
+                        <li class="list-group-item"><strong>日期:</strong> @(Model.Entities.Date ?? "未指定")</li>
+                        <li class="list-group-item"><strong>開始時間:</strong> @(Model.Entities.StartTime ?? "未指定")</li>
+                        <li class="list-group-item"><strong>時長 (分鐘):</strong> @(Model.Entities.DurationMinutes?.ToString() ?? "未指定")</li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    無法解析您的指令，請換個方式說說看。
+                </div>
+            }
+        </div>
+    </div>
+}
